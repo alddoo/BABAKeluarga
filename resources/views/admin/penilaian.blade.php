@@ -4,8 +4,25 @@
 @section('content')
   <h1 class="title" style="font-size:40px;">Penilai PM</h1>
 
+  <div class="panel mb32">
+    <form method="GET" action="{{ route('admin.penilaian') }}" style="display:flex;gap:10px;flex-wrap:wrap;">
+      <input class="input" name="q" value="{{ request('q') }}" placeholder="Cari nama pengantin atau tempat..."
+             style="padding:12px 14px;border-radius:12px;border:1px solid #ddd;min-width:280px;">
+      <button type="submit" style="padding:12px 14px;border:none;border-radius:12px;background:#1f2a2e;color:#fff;font-weight:900;cursor:pointer;">
+        Cari
+      </button>
+    </form>
+  </div>
+
+  <div class="panel mb32">
+    <a href="{{ route('admin.penilaian.export') }}"
+       style="padding:12px 14px;border-radius:12px;background:#28a745;color:#fff;font-weight:900;">
+      Export Word
+    </a>
+  </div>
+
   @forelse($penilaian as $p)
-    <div class="panel mb16">
+    <div class="panel mb32">
       <div style="display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;">
         <div><b>Pengantin:</b> {{ $p->pengantin }}</div>
         <div><b>Tanggal:</b> {{ $p->tanggal }}</div>
@@ -23,7 +40,6 @@
             <th>Hospitality</th>
             <th>Komunikasi</th>
             <th>Inisiatif</th>
-            <th>Nilai Akhir</th>
           </tr>
         </thead>
         <tbody>
@@ -36,7 +52,6 @@
               <td>{{ $it->hospitality }}</td>
               <td>{{ $it->komunikasi }}</td>
               <td>{{ $it->inisiatif }}</td>
-              <td><b style="color:#d20000;">{{ $it->nilai_akhir }}</b></td>
             </tr>
           @endforeach
         </tbody>
@@ -48,7 +63,4 @@
     </div>
   @endforelse
 
-  <div class="mt16">
-    {{ $penilaian->links() }}
-  </div>
 @endsection

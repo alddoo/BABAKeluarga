@@ -29,6 +29,7 @@ Route::middleware(['auth','role:admin'])->group(function () {
   Route::get('/admin', [AdminController::class,'dashboard'])->name('admin.dashboard');
   Route::get('/admin/daily-report', [AdminController::class,'daily'])->name('admin.daily');
   Route::get('/admin/penilai-pm', [AdminController::class,'penilaian'])->name('admin.penilaian');
+  Route::get('/admin/penilai-pm/export', [AdminController::class,'exportPenilaian'])->name('admin.penilaian.export');
 
   // --- TAMBAHKAN RUTE EKSPOR DI SINI ---
   Route::get('/admin/daily-report/pdf', [AdminController::class, 'exportPdf'])->name('daily.export.pdf');

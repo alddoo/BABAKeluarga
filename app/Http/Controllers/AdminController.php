@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Anggota;
 use App\Models\DailyReport;
 use App\Models\PenilaianHeader;
+use App\Models\PenilaianItem;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\IOFactory;
 use Carbon\Carbon;
@@ -32,9 +33,15 @@ class AdminController extends Controller
         return view('admin.daily', compact('daily'));
     }
 
-    public function penilaian()
+    public function penilaian(Request $request)
     {
-        $penilaian = PenilaianHeader::with(['user','items'])->latest()->paginate(5);
+        $q = $request->query('q');
+
+        $penilaian = PenilaianHeader::with(['user','items'])
+            ->when($q, fn($qq) => $qq->where('pengantin', 'like', "%$q%")->orWhere('tempat', 'like', "%$q%"))
+            ->latest()
+            ->get();
+
         return view('admin.penilaian', compact('penilaian'));
     }
 
@@ -115,6 +122,54 @@ class AdminController extends Controller
         
         $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
         $objWriter->save($tempFile);
+
+        return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
+    }
+
+    public function exportPenilaian()
+    {
+        // Ambil semua PenilaianItem dengan header, urutkan berdasarkan posisi, lalu nilai_akhir descending
+        $items = PenilaianItem::with('header.user')
+            ->orderBy('posisi')
+            ->orderBy('nilai_akhir', 'desc')
+            ->get();
+
+        $phpWord = new PhpWord();
+        $section = $phpWord->addSection();
+
+        $section->addText('Penilaian Anggota Berdasarkan Posisi', ['bold' => true, 'size' => 16]);
+        $section->addText('Tanggal Unduh: ' . Carbon::now()->format('d M Y H:i'));
+        $section->addTextBreak(1);
+
+        // Atur style tabel dengan border
+        $styleTable = [
+            'borderSize' => 6,
+            'borderColor' => '000000',
+            'cellMargin' => 80
+        ];
+        $phpWord->addTableStyle('PenilaianTable', $styleTable);
+        $table = $section->addTable('PenilaianTable');
+
+        $table->addRow();
+        $table->addCell(500)->addText('No', ['bold' => true]);
+        $table->addCell(1500)->addText('Posisi', ['bold' => true]);
+        $table->addCell(2000)->addText('Nama Anggota', ['bold' => true]);
+        $table->addCell(1000)->addText('Nilai Akhir', ['bold' => true]);
+        $table->addCell(1500)->addText('User Input', ['bold' => true]);
+
+        $no = 1;
+        foreach ($items as $item) {
+            $table->addRow();
+            $table->addCell(500)->addText($no++);
+            $table->addCell(1500)->addText($item->posisi ?? '-');
+            $table->addCell(2000)->addText($item->anggota);
+            $table->addCell(1000)->addText(number_format($item->nilai_akhir, 2));
+            $table->addCell(1500)->addText($item->header->user->name ?? '-');
+        }
+
+        $fileName = 'penilaian_per_posisi.docx';
+        $tempFile = tempnam(sys_get_temp_dir(), 'phpword');
+        $phpWord->save($tempFile, 'Word2007');
 
         return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
     }
