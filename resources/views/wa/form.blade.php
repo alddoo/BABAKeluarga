@@ -141,6 +141,8 @@
   <div class="wrap">
     <h1>Selamat Datang,<br>{{ auth()->user()->name }} 👋</h1>
 
+    <a href="{{ route('wa.history') }}">Lihat History Data</a>
+
     @if(session('ok')) 
       <div class="msg">
         <i class="bi bi-check-circle-fill"></i> {{ session('ok') }}

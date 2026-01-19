@@ -17,6 +17,7 @@ Route::post('/logout', [AuthController::class,'logout'])->name('logout');
 Route::middleware(['auth','role:wa'])->group(function () {
   Route::get('/wa', [WaController::class,'form'])->name('wa.form');
   Route::post('/wa', [WaController::class,'store'])->name('wa.store');
+  Route::get('/wa/history', [WaController::class,'history'])->name('wa.history');
 });
 
 Route::middleware(['auth','role:pm'])->group(function () {

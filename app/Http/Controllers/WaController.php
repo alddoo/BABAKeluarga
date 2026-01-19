@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DailyReport;
-use Illuminate\Http\Request;
+use App\Models\PenilaianItem;
 
 class WaController extends Controller
 {
@@ -44,5 +43,15 @@ class WaController extends Controller
 
         // 4. Kembali dengan Pesan Sukses
         return back()->with('ok', 'Daily report berhasil disimpan.');
+    }
+
+    public function history() {
+        $reports = DailyReport::all();
+        foreach ($reports as $report) {
+            $evaluations = PenilaianItem::where('anggota', $report->nama)->get();
+            $report->total_penilaian = $evaluations->count();
+            $report->rata_rata_nilai = $evaluations->avg('nilai_akhir') ?? 0;
+        }
+        return view('wa.history', compact('reports'));
     }
 }

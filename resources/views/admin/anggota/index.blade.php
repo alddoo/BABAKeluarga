@@ -29,7 +29,9 @@
           <th style="width:70px;">No</th>
           <th>Nama</th>
           <th>Posisi</th>
-          <th>Total Job</th> <th style="width:220px;">Aksi</th>
+          <th>Total Job</th>
+          <th>Nilai Akhir</th>
+          <th style="width:220px;">Aksi</th>
         </tr>
       </thead>
       <tbody>
@@ -41,6 +43,11 @@
             <td>
                 <span style="background: #e3e3e3; padding: 4px 10px; border-radius: 8px; font-weight: bold;">
                     {{ $a->penilaian_count }}
+                </span>
+            </td>
+            <td>
+                <span style="background: #f2c400; padding: 4px 10px; border-radius: 8px; font-weight: bold;">
+                    {{ number_format($a->nilai_akhir_avg, 2) }}
                 </span>
             </td>
             <td>
@@ -61,7 +68,7 @@
             </td>
           </tr>
         @empty
-          <tr><td colspan="5">Belum ada anggota.</td></tr>
+          <tr><td colspan="6">Belum ada anggota.</td></tr>
         @endforelse
       </tbody>
     </table>

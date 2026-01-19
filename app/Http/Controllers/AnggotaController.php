@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Anggota;
+use App\Models\PenilaianItem;
 use Illuminate\Http\Request;
 
 class AnggotaController extends Controller
@@ -16,6 +17,13 @@ class AnggotaController extends Controller
       ->orderBy('nama')
       ->paginate(10)
       ->withQueryString();
+
+    // Tambahkan jumlah penilaian untuk setiap anggota
+    foreach ($anggotas as $anggota) {
+      $evaluations = PenilaianItem::where('anggota', $anggota->nama)->get();
+      $anggota->penilaian_count = $evaluations->count();
+      $anggota->nilai_akhir_avg = $evaluations->avg('nilai_akhir') ?? 0;
+    }
 
     return view('admin.anggota.index', compact('anggotas','q'));
   }
