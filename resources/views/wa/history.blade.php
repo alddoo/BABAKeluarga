@@ -15,8 +15,6 @@
                 <th>Tanggal</th>
                 <th>Kegiatan</th>
                 <th>Foto</th>
-                <th>Total Penilaian</th>
-                <th>Rata-rata Nilai</th>
             </tr>
         </thead>
         <tbody>
@@ -33,8 +31,6 @@
                             Tidak ada foto
                         @endif
                     </td>
-                    <td>{{ $report->total_penilaian }}</td>
-                    <td>{{ number_format($report->rata_rata_nilai, 2) }}</td>
                 </tr>
             @endforeach
         </tbody>

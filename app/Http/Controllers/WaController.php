@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\PenilaianItem;
+use App\Models\DailyReport;
 
 class WaController extends Controller
 {
     public function form()
     {
-        $kegiatanList = ['Persiapan', 'Dekorasi', 'Koordinasi Vendor', 'Acara', 'Lainnya'];
+        $kegiatanList = ['Meeting Pertama','Meeting Kedua','Technical Meeting', 'Test Food', 'Gladi','Dekorasi','Lain-lain'];
         return view('wa.form', compact('kegiatanList'));
     }
 
@@ -47,11 +49,6 @@ class WaController extends Controller
 
     public function history() {
         $reports = DailyReport::all();
-        foreach ($reports as $report) {
-            $evaluations = PenilaianItem::where('anggota', $report->nama)->get();
-            $report->total_penilaian = $evaluations->count();
-            $report->rata_rata_nilai = $evaluations->avg('nilai_akhir') ?? 0;
-        }
         return view('wa.history', compact('reports'));
     }
 }
