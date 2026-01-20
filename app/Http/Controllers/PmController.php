@@ -51,8 +51,7 @@ class PmController extends Controller
       ]);
 
       foreach ($request->items as $row) {
-        $avg = ($row['waktu'] + $row['kerja_sama'] + $row['hospitality'] + $row['komunikasi'] + $row['inisiatif']) / 5;
-        $nilaiAkhir = (int) round($avg);
+        $nilaiAkhir = $row['waktu'] + $row['kerja_sama'] + $row['hospitality'] + $row['komunikasi'] + $row['inisiatif'];
 
         PenilaianItem::create([
           'penilaian_header_id' => $header->id,

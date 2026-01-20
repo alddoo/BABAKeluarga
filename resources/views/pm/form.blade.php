@@ -161,8 +161,7 @@
     scores.forEach(inp => { 
         sum += parseInt(inp.value || 0, 10); 
     });
-    const avg = scores.length > 0 ? Math.round(sum / scores.length) : 0;
-    tr.querySelector('.akhir').value = avg;
+    tr.querySelector('.akhir').value = sum;
   }
 
   function addRow(data = null) {
@@ -203,7 +202,7 @@
         </div>
 
         <div class="akhir-container">
-            <span style="font-weight:900; font-size:13px;">RATA-RATA NILAI:</span>
+            <span style="font-weight:900; font-size:13px;">NILAI AKHIR:</span>
             <input class="input small akhir" type="number" value="0" readonly style="width:60px; color:red; border:none; background:transparent; font-size:18px;">
         </div>
       </td>

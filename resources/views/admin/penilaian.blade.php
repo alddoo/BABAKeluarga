@@ -2,7 +2,7 @@
 @section('title','Admin - Penilai PM')
 
 @section('content')
-  <h1 class="title" style="font-size:40px;">Penilai PM</h1>
+  <h1 class="title" style="font-size:40px;">Penilain PM</h1>
 
   <div class="panel mb32">
     <form method="GET" action="{{ route('admin.penilaian') }}" style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -40,6 +40,7 @@
             <th>Hospitality</th>
             <th>Komunikasi</th>
             <th>Inisiatif</th>
+            <th>Nilai Akhir</th>
           </tr>
         </thead>
         <tbody>
@@ -52,6 +53,7 @@
               <td>{{ $it->hospitality }}</td>
               <td>{{ $it->komunikasi }}</td>
               <td>{{ $it->inisiatif }}</td>
+              <td>{{ $it->nilai_akhir }}</td>
             </tr>
           @endforeach
         </tbody>

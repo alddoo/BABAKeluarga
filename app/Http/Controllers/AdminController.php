@@ -128,11 +128,28 @@ class AdminController extends Controller
 
     public function exportPenilaian()
     {
-        // Ambil semua PenilaianItem dengan header, urutkan berdasarkan posisi, lalu nilai_akhir descending
-        $items = PenilaianItem::with('header.user')
-            ->orderBy('posisi')
-            ->orderBy('nilai_akhir', 'desc')
-            ->get();
+        // Ambil semua PenilaianItem dengan header
+        $items = PenilaianItem::with('header.user')->get();
+
+        // Kelompokkan berdasarkan anggota dan posisi
+        $grouped = $items->groupBy(function ($item) {
+            return $item->anggota . '|' . $item->posisi;
+        });
+
+        // Hitung sum nilai_akhir untuk setiap group
+        $summary = $grouped->map(function ($group) {
+            $sumNilai = $group->sum('nilai_akhir');
+            $posisi = $group->first()->posisi;
+            $anggota = $group->first()->anggota;
+            return [
+                'anggota' => $anggota,
+                'posisi' => $posisi,
+                'sum_nilai_akhir' => $sumNilai,
+            ];
+        });
+
+        // Urutkan berdasarkan posisi ascending, lalu sum_nilai_akhir descending
+        $summary = $summary->sortBy('posisi')->sortByDesc('sum_nilai_akhir');
 
         $phpWord = new PhpWord();
         $section = $phpWord->addSection();
@@ -154,20 +171,18 @@ class AdminController extends Controller
         $table->addCell(500)->addText('No', ['bold' => true]);
         $table->addCell(1500)->addText('Posisi', ['bold' => true]);
         $table->addCell(2000)->addText('Nama Anggota', ['bold' => true]);
-        $table->addCell(1000)->addText('Nilai Akhir', ['bold' => true]);
-        $table->addCell(1500)->addText('User Input', ['bold' => true]);
+        $table->addCell(1000)->addText('Total Nilai Akhir', ['bold' => true]);
 
         $no = 1;
-        foreach ($items as $item) {
+        foreach ($summary as $data) {
             $table->addRow();
             $table->addCell(500)->addText($no++);
-            $table->addCell(1500)->addText($item->posisi ?? '-');
-            $table->addCell(2000)->addText($item->anggota);
-            $table->addCell(1000)->addText(number_format($item->nilai_akhir, 2));
-            $table->addCell(1500)->addText($item->header->user->name ?? '-');
+            $table->addCell(1500)->addText($data['posisi'] ?? '-');
+            $table->addCell(2000)->addText($data['anggota']);
+            $table->addCell(1000)->addText(number_format($data['sum_nilai_akhir'], 2));
         }
 
-        $fileName = 'penilaian_per_posisi.docx';
+        $fileName = 'penilaian_per_posisi_gabungan.docx';
         $tempFile = tempnam(sys_get_temp_dir(), 'phpword');
         $phpWord->save($tempFile, 'Word2007');
 
